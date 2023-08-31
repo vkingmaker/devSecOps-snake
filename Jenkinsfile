@@ -1,44 +1,39 @@
 node ('Ubuntu-app-server'){  
-   // def app
+   def app
     stage('Cloning Git') {
         /* Let's make sure we have the repository cloned to our workspace */
        checkout scm
     }  
-    /*stage('SAST'){
+    stage('SAST'){
         build 'SECURITY-SAST-SNYK'
-    }*/
+    }
 
     
     stage('Build-and-Tag') {
     /* This builds the actual image; synonymous to
          * docker build on the command line */
-       // app = docker.build("vkingmaker/snake")
-	sh 'echo Build-and-Tag'
+       app = docker.build("vkingmaker/snake")
     }
     stage('Post-to-dockerhub') {
     
-    /* docker.withRegistry('https://registry.hub.docker.com', 'training_creds') {
+    docker.withRegistry('https://registry.hub.docker.com', 'training_creds') {
             app.push("latest")
-        			}*/
-	sh 'echo Post-to-dockerhub';
+        			}
          }
     stage('SECURITY-IMAGE-SCANNER'){
-       /* build 'SECURITY-IMAGE-SCANNER-AQUAMICROSCANNER'*/
-	sh 'echo security-Image-Scanner'
+       build 'SECURITY-IMAGE-SCANNER-AQUAMICROSCANNER'
     }
   
     
     stage('Pull-image-server') {
     
-         /*sh "docker-compose down"
-         sh "docker-compose up -d"*/
-	sh 'echo Puul-image-server'
+         sh "docker-compose down"
+         sh "docker-compose up -d"
       }
     
     stage('DAST')
         {
-       /* build 'SECURITY-DAST-OWASP_ZAP'*/
-	sh 'echo Dast'
+        build 'SECURITY-DAST-OWASP_ZAP'
         }
  
 }
