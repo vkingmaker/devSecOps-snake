@@ -13,13 +13,16 @@ node('Ubuntu-app-server') {
     sh "docker build -t ${DOCKER_HUB_REPO}:${DOCKER_IMAGE_TAG} ."
   }
   stage('Post-to-dockerhub') {
-    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
-    sh "docker push ${DOCKER_HUB_REPO}:${DOCKER_IMAGE_TAG}"
+    script{
+      sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+      sh "docker push ${DOCKER_HUB_REPO}:${DOCKER_IMAGE_TAG}"
+    }
   }
 
   stage('Pull-image-server') {
-    sh 'docker-compose down'
-    sh 'docker-compose up -d'
+    script {
+      sh 'docker-compose down'
+      sh 'docker-compose up -d'
+    }
   }
 }
-
