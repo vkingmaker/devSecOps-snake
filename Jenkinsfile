@@ -2,8 +2,9 @@
 node('Ubuntu-app-server') {
   environment {
     DOCKER_HUB_REPO = 'vkingmaker/snake'
+    DOCKER_IMAGE_TAG = "${env.BUILD_NUMBER}"
     DOCKER_USERNAME = credentials('docker-hub-username-credential-id')
-    DOCKER_PASSWORD = a('docker-hub-password-credential-id')
+    DOCKER_PASSWORD = credentials('docker-hub-password-credential-id')
   }
   stage('Cloning Git') {
     checkout scm
