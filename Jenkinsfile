@@ -12,7 +12,7 @@ node ('Ubuntu-app-server'){
     }
     stage('Post-to-dockerhub') {
     
-    docker.withRegistry('https://registry.hub.docker.com', 'training_creds') {
+    docker.withRegistry('', 'training_creds') {
             app.push("latest")
         			}
          }
