@@ -10,7 +10,7 @@ node('Ubuntu-app-server') {
   }
 
   stage('Build-and-Tag') {
-    sh "docker build -t ${DOCKER_HUB_REPO}:${DOCKER_IMAGE_TAG} -f ."
+    sh "docker build -t ${DOCKER_HUB_REPO}:${DOCKER_IMAGE_TAG} ."
   }
   stage('Post-to-dockerhub') {
     sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
