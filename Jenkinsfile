@@ -3,7 +3,7 @@ node('Ubuntu-app-server') {
   def DOCKER_IMAGE_TAG = "${env.BUILD_NUMBER}"
   def DOCKER_USERNAME = credentials('docker-hub-username-credential-id')
   def DOCKER_PASSWORD = credentials('docker-hub-password-credential-id')
-
+  def TRAINING_CRED=credentials('training_creds') 
   try {
     // Checkout your source code from your version control system
     checkout scm
@@ -12,7 +12,7 @@ node('Ubuntu-app-server') {
     sh "docker build -t ${DOCKER_HUB_REPO}:${DOCKER_IMAGE_TAG} -f Dockerfile ."
 
     // Log in to Docker Hub using environment variables
-    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+    sh "docker login -u ${TRAINING_CRED_USR} -p ${TRAINING_CRED_PSW}"
 
     // Push the Docker image to Docker Hub
     sh "docker push ${DOCKER_HUB_REPO}:${DOCKER_IMAGE_TAG}"
