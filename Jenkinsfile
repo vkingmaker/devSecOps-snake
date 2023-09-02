@@ -1,33 +1,33 @@
 node('Ubuntu-app-server') {
-  def DOCKER_HUB_REPO = 'vkingmaker/snake'
-  def DOCKER_IMAGE_TAG = "${env.BUILD_NUMBER}"
-  def DOCKER_USERNAME = credentials('docker-hub-username-credential-id')
-  def DOCKER_PASSWORD = credentials('docker-hub-password-credential-id')
-  def TRAINING_CRED=credentials('training_creds') 
-  try {
-    // Checkout your source code from your version control system
-    checkout scm
+    def DOCKER_HUB_REPO = 'vkingmaker' // Your Docker Hub repository
+    def APP_TAG = 'snake' // Your Docker image tag
 
-    // Build the Docker image
-    sh "docker build -t ${DOCKER_HUB_REPO}:${DOCKER_IMAGE_TAG} -f Dockerfile ."
+    try {
+        // Authenticate with Docker Hub
+        withCredentials([usernamePassword(credentialsId: 'training_creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+            sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+        }
 
-    // Log in to Docker Hub using environment variables
-    sh "docker login -u ${TRAINING_CRED_USR} -p ${TRAINING_CRED_PSW}"
+        // Checkout your source code from your version control system
+        checkout scm
 
-    // Push the Docker image to Docker Hub
-    sh "docker push ${DOCKER_HUB_REPO}:${DOCKER_IMAGE_TAG}"
+        // Build the Docker image
+        sh "docker build -t ${DOCKER_HUB_REPO}/${APP_TAG}:${BUILD_NUMBER} ."
 
-    // Clean up any dangling images or containers (optional)
-    sh 'docker system prune -f'
+        // Push the Docker image
+        sh "docker push ${DOCKER_HUB_REPO}/${APP_TAG}:${BUILD_NUMBER}"
 
-    // Notify or perform additional actions on success
-    echo 'Docker image built and pushed successfully!'
+        // Clean up any dangling images or containers (optional)
+        sh 'docker system prune -f'
+
+        // Notify or perform additional actions on success
+        echo 'Docker image built and pushed successfully!'
     } catch (Exception e) {
-    // Notify or perform actions on failure
-    echo 'Docker image build or push failed!'
-    currentBuild.result = 'FAILURE'
+        // Notify or perform actions on failure
+        echo 'Docker image build or push failed!'
+        currentBuild.result = 'FAILURE'
     } finally {
-    // Logout from Docker Hub (optional)
-    sh 'docker logout'
-  }
+        // Logout from Docker Hub (optional)
+        sh 'docker logout'
+    }
 }
